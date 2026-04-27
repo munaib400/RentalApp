@@ -146,4 +146,13 @@ public partial class MainViewModel : BaseViewModel
             IsBusy = false;
         }
     }
+
+    /// @brief Navigates to the items list page
+    /// @details Relay command that navigates to the items browsing page
+    /// @return A task representing the asynchronous navigation operation
+    [RelayCommand]
+    private async Task NavigateToItemsAsync()
+    {
+        await _navigationService.NavigateToAsync("ItemListPage");
+    }
 }

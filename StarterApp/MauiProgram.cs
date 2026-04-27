@@ -4,6 +4,8 @@ using StarterApp.Database.Data;
 using StarterApp.Views;
 using System.Diagnostics;
 using StarterApp.Services;
+using StarterApp.Repositories;
+using StarterApp.Repositories;
 
 namespace StarterApp;
 
@@ -20,7 +22,7 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
-        builder.Services.AddDbContext<AppDbContext>();
+        builder.Services.AddDbContextFactory<AppDbContext>();
 
         builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
         builder.Services.AddSingleton<INavigationService, NavigationService>();
@@ -41,6 +43,14 @@ public static class MauiProgram
         builder.Services.AddTransient<UserDetailViewModel>();
         builder.Services.AddSingleton<TempViewModel>();
         builder.Services.AddTransient<TempPage>();
+
+        // Item feature registrations
+        builder.Services.AddTransient<IItemRepository, ItemRepository>();
+        builder.Services.AddTransient<IItemService, ItemService>();
+        builder.Services.AddTransient<ItemListViewModel>();
+        builder.Services.AddTransient<ItemListPage>();
+        builder.Services.AddTransient<CreateItemViewModel>();
+        builder.Services.AddTransient<CreateItemPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();

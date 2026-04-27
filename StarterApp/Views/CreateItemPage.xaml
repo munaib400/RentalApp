@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:StarterApp.ViewModels"
+             x:DataType="viewmodels:CreateItemViewModel"
+             x:Class="StarterApp.Views.CreateItemPage"
+             Title="{Binding Title}">
+
+    <ScrollView>
+        <StackLayout Padding="20" Spacing="15">
+
+            <Label Text="Title" FontAttributes="Bold"/>
+            <Entry Placeholder="Enter item title"
+                   Text="{Binding Title}"/>
+
+            <Label Text="Description" FontAttributes="Bold"/>
+            <Editor Placeholder="Describe your item"
+                    Text="{Binding Description}"
+                    HeightRequest="100"/>
+
+            <Label Text="Daily Rate (£)" FontAttributes="Bold"/>
+            <Entry Placeholder="0.00"
+                   Text="{Binding DailyRate}"
+                   Keyboard="Numeric"/>
+
+            <Label Text="Category" FontAttributes="Bold"/>
+            <Entry Placeholder="e.g. Tools, Games, Camping"
+                   Text="{Binding Category}"/>
+
+            <Label Text="Location" FontAttributes="Bold"/>
+            <Entry Placeholder="Your location"
+                   Text="{Binding Location}"/>
+
+            <Button Text="Create Item"
+                    Command="{Binding CreateItemCommand}"
+                    BackgroundColor="Purple"
+                    TextColor="White"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"/>
+
+            <Button Text="Cancel"
+                    Command="{Binding CancelCommand}"
+                    BackgroundColor="Gray"
+                    TextColor="White"/>
+
+        </StackLayout>
+    </ScrollView>
+</ContentPage>
