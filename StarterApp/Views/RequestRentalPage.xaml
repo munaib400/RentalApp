@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:StarterApp.ViewModels"
+             x:DataType="viewmodels:RequestRentalViewModel"
+             x:Class="StarterApp.Views.RequestRentalPage"
+             Title="{Binding Title}">
+
+    <ScrollView>
+        <StackLayout Padding="20" Spacing="15">
+
+            <Label Text="Start Date" FontAttributes="Bold"/>
+            <DatePicker Date="{Binding StartDate}" MinimumDate="{x:Static sys:DateTime.Today}"/>
+
+            <Label Text="End Date" FontAttributes="Bold"/>
+            <DatePicker Date="{Binding EndDate}" MinimumDate="{x:Static sys:DateTime.Today}"/>
+
+            <Label Text="Notes (optional)" FontAttributes="Bold"/>
+            <Editor Placeholder="Any special notes for the owner"
+                    Text="{Binding Notes}"
+                    HeightRequest="100"/>
+
+            <Button Text="Submit Request"
+                    Command="{Binding SubmitRequestCommand}"
+                    BackgroundColor="Purple"
+                    TextColor="White"/>
+
+            <Button Text="Cancel"
+                    Command="{Binding CancelCommand}"
+                    BackgroundColor="Gray"
+                    TextColor="White"/>
+
+        </StackLayout>
+    </ScrollView>
+</ContentPage>

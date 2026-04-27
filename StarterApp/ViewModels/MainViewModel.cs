@@ -155,4 +155,10 @@ public partial class MainViewModel : BaseViewModel
     {
         await _navigationService.NavigateToAsync("ItemListPage");
     }
+
+    [RelayCommand]
+    private async Task NavigateToRentalsAsync()
+    {
+        await _navigationService.NavigateToAsync("RentalListPage");
+    }
 }

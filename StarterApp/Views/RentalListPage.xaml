@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:StarterApp.ViewModels"
+             xmlns:models="clr-namespace:StarterApp.Database.Models;assembly=StarterApp.Database"
+             x:DataType="viewmodels:RentalListViewModel"
+             x:Class="StarterApp.Views.RentalListPage"
+             Title="{Binding Title}">
+
+    <ScrollView>
+        <StackLayout Padding="15" Spacing="15">
+
+            <!-- Incoming Requests Section -->
+            <Label Text="Incoming Requests"
+                   FontSize="20"
+                   FontAttributes="Bold"/>
+
+            <CollectionView ItemsSource="{Binding IncomingRequests}">
+                <CollectionView.EmptyView>
+                    <Label Text="No incoming requests" TextColor="Gray"/>
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Rental">
+                        <Frame Margin="0,5" Padding="10" CornerRadius="8">
+                            <StackLayout>
+                                <Label Text="{Binding Item.Title}" FontSize="16" FontAttributes="Bold"/>
+                                <Label Text="{Binding Renter.FullName, StringFormat='From: {0}'}" FontSize="14"/>
+                                <Label Text="{Binding StartDate, StringFormat='Start: {0:dd/MM/yyyy}'}" FontSize="12" TextColor="Gray"/>
+                                <Label Text="{Binding EndDate, StringFormat='End: {0:dd/MM/yyyy}'}" FontSize="12" TextColor="Gray"/>
+                                <Label Text="{Binding TotalCost, StringFormat='Total: £{0:F2}'}" FontSize="14" TextColor="Purple"/>
+                                <Label Text="{Binding Status}" FontSize="12" TextColor="Orange"/>
+                                <StackLayout Orientation="Horizontal" Spacing="10"
+                                             IsVisible="{Binding Status, Converter={StaticResource StringToBoolConverter}, ConverterParameter='Requested'}">
+                                    <Button Text="Approve"
+                                            BackgroundColor="Green"
+                                            TextColor="White"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:RentalListViewModel}}, Path=ApproveRentalCommand}"
+                                            CommandParameter="{Binding .}"/>
+                                    <Button Text="Reject"
+                                            BackgroundColor="Red"
+                                            TextColor="White"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:RentalListViewModel}}, Path=RejectRentalCommand}"
+                                            CommandParameter="{Binding .}"/>
+                                </StackLayout>
+                            </StackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- My Rentals Section -->
+            <Label Text="My Rental Requests"
+                   FontSize="20"
+                   FontAttributes="Bold"
+                   Margin="0,20,0,0"/>
+
+            <CollectionView ItemsSource="{Binding MyRentals}">
+                <CollectionView.EmptyView>
+                    <Label Text="No rental requests" TextColor="Gray"/>
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Rental">
+                        <Frame Margin="0,5" Padding="10" CornerRadius="8">
+                            <StackLayout>
+                                <Label Text="{Binding Item.Title}" FontSize="16" FontAttributes="Bold"/>
+                                <Label Text="{Binding StartDate, StringFormat='Start: {0:dd/MM/yyyy}'}" FontSize="12" TextColor="Gray"/>
+                                <Label Text="{Binding EndDate, StringFormat='End: {0:dd/MM/yyyy}'}" FontSize="12" TextColor="Gray"/>
+                                <Label Text="{Binding TotalCost, StringFormat='Total: £{0:F2}'}" FontSize="14" TextColor="Purple"/>
+                                <Label Text="{Binding Status}" FontSize="12" TextColor="Orange"/>
+                            </StackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        </StackLayout>
+    </ScrollView>
+</ContentPage>
