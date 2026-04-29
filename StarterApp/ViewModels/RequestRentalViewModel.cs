@@ -45,7 +45,8 @@ public partial class RequestRentalViewModel : BaseViewModel
         }
         catch (Exception ex)
         {
-            await Shell.Current.DisplayAlert("Error", ex.Message, "OK");
+            var message = ex.InnerException?.Message ?? ex.Message;
+            await Shell.Current.DisplayAlert("Error", message, "OK");
         }
         finally
         {

@@ -30,9 +30,6 @@ public class RentalService : IRentalService
 
     public async Task<Rental> RequestRentalAsync(int itemId, DateTime startDate, DateTime endDate, string? notes)
     {
-        var item = await _itemRepository.GetItemByIdAsync(itemId);
-        if (item == null) throw new Exception("Item not found");
-
         var days = (endDate - startDate).Days;
         if (days <= 0) throw new Exception("End date must be after start date");
 
@@ -40,9 +37,9 @@ public class RentalService : IRentalService
         {
             ItemId = itemId,
             RenterId = _authService.CurrentUser?.Id ?? 0,
-            StartDate = startDate,
-            EndDate = endDate,
-            TotalCost = item.DailyRate * days,
+            StartDate = DateTime.SpecifyKind(startDate, DateTimeKind.Utc),
+            EndDate = DateTime.SpecifyKind(endDate, DateTimeKind.Utc),
+            TotalCost = days * 5,
             Status = RentalStatus.Requested,
             Notes = notes,
             CreatedAt = DateTime.UtcNow,
@@ -51,7 +48,6 @@ public class RentalService : IRentalService
 
         return await _rentalRepository.CreateRentalAsync(rental);
     }
-
     public async Task<Rental> ApproveRentalAsync(int rentalId)
     {
         return await _rentalRepository.UpdateRentalStatusAsync(rentalId, RentalStatus.Approved);

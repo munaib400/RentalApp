@@ -45,7 +45,7 @@ public class RentalRepository : IRentalRepository
     public async Task<Rental> CreateRentalAsync(Rental rental)
     {
         using var context = await _contextFactory.CreateDbContextAsync();
-        context.Rentals.Add(rental);
+        context.Entry(rental).State = Microsoft.EntityFrameworkCore.EntityState.Added;
         await context.SaveChangesAsync();
         return rental;
     }

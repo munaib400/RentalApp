@@ -10,10 +10,10 @@
         <StackLayout Padding="20" Spacing="15">
 
             <Label Text="Start Date" FontAttributes="Bold"/>
-            <DatePicker Date="{Binding StartDate}" MinimumDate="{x:Static sys:DateTime.Today}"/>
+            <DatePicker Date="{Binding StartDate}"/>
 
             <Label Text="End Date" FontAttributes="Bold"/>
-            <DatePicker Date="{Binding EndDate}" MinimumDate="{x:Static sys:DateTime.Today}"/>
+            <DatePicker Date="{Binding EndDate}"/>
 
             <Label Text="Notes (optional)" FontAttributes="Bold"/>
             <Editor Placeholder="Any special notes for the owner"

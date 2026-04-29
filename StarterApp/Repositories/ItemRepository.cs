@@ -27,6 +27,7 @@ public class ItemRepository : IItemRepository
         using var context = await _contextFactory.CreateDbContextAsync();
         return await context.Items
             .Include(i => i.Owner)
+            .AsNoTracking()
             .FirstOrDefaultAsync(i => i.Id == id);
     }
 
