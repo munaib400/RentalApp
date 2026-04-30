@@ -85,4 +85,65 @@ public class ItemRepositoryTests
         await context.SaveChangesAsync();
         Assert.Equal(1, await context.Rentals.CountAsync());
     }
+
+    [Fact]
+    public async Task AddRental_WithCorrectStatus_ReturnsRequested()
+    {
+        using var context = CreateInMemoryContext();
+        var rental = new Rental { ItemId = 1, RenterId = 2, StartDate = DateTime.UtcNow, EndDate = DateTime.UtcNow.AddDays(3), TotalCost = 17.97m, Status = RentalStatus.Requested, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow };
+        context.Rentals.Add(rental);
+        await context.SaveChangesAsync();
+        var result = await context.Rentals.FindAsync(rental.Id);
+        Assert.Equal(RentalStatus.Requested, result!.Status);
+    }
+
+    [Fact]
+    public async Task UpdateRentalStatus_ChangesStatusCorrectly()
+    {
+        using var context = CreateInMemoryContext();
+        var rental = new Rental { ItemId = 1, RenterId = 2, StartDate = DateTime.UtcNow, EndDate = DateTime.UtcNow.AddDays(1), TotalCost = 5.99m, Status = RentalStatus.Requested, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow };
+        context.Rentals.Add(rental);
+        await context.SaveChangesAsync();
+        rental.Status = RentalStatus.Approved;
+        context.Rentals.Update(rental);
+        await context.SaveChangesAsync();
+        var result = await context.Rentals.FindAsync(rental.Id);
+        Assert.Equal(RentalStatus.Approved, result!.Status);
+    }
+
+    [Fact]
+    public async Task GetRentalsByRenter_ReturnsCorrectRentals()
+    {
+        using var context = CreateInMemoryContext();
+        context.Rentals.AddRange(
+            new Rental { ItemId = 1, RenterId = 1, StartDate = DateTime.UtcNow, EndDate = DateTime.UtcNow.AddDays(1), TotalCost = 5.99m, Status = RentalStatus.Requested, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new Rental { ItemId = 1, RenterId = 2, StartDate = DateTime.UtcNow, EndDate = DateTime.UtcNow.AddDays(1), TotalCost = 5.99m, Status = RentalStatus.Requested, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow }
+        );
+        await context.SaveChangesAsync();
+        var rentals = await context.Rentals.Where(r => r.RenterId == 1).ToListAsync();
+        Assert.Single(rentals);
+    }
+
+    [Fact]
+    public async Task Item_DailyRate_CalculatesTotalCostCorrectly()
+    {
+        using var context = CreateInMemoryContext();
+        var item = new Item { Title = "Drill", Description = "A drill", DailyRate = 5.99m, Category = "Tools", Location = "Edinburgh", OwnerId = 1, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow };
+        context.Items.Add(item);
+        await context.SaveChangesAsync();
+        var days = 3;
+        var totalCost = item.DailyRate * days;
+        Assert.Equal(17.97m, totalCost);
+    }
+
+    [Fact]
+    public async Task Item_IsAvailable_DefaultsToTrue()
+    {
+        using var context = CreateInMemoryContext();
+        var item = new Item { Title = "Drill", Description = "A drill", DailyRate = 5.99m, Category = "Tools", Location = "Edinburgh", OwnerId = 1, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow };
+        context.Items.Add(item);
+        await context.SaveChangesAsync();
+        var result = await context.Items.FindAsync(item.Id);
+        Assert.True(result!.IsAvailable);
+    }
 }
