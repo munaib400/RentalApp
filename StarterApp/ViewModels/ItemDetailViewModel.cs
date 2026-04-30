@@ -23,6 +23,9 @@ public partial class ItemDetailViewModel : BaseViewModel
     [ObservableProperty]
     private bool _canEditItem;
 
+    [ObservableProperty]
+    private bool _canDeleteItem;
+
     public ItemDetailViewModel(IItemService itemService, IAuthenticationService authService)
     {
         _itemService = itemService;
@@ -47,6 +50,7 @@ public partial class ItemDetailViewModel : BaseViewModel
                 var currentUserId = _authService.CurrentUser?.Id ?? 0;
                 CanRequestRental = Item.OwnerId != currentUserId;
                 CanEditItem = Item.OwnerId == currentUserId;
+                CanDeleteItem = Item.OwnerId == currentUserId;
             }
         }
         catch (Exception ex)
@@ -69,5 +73,32 @@ public partial class ItemDetailViewModel : BaseViewModel
     private async Task EditItemAsync()
     {
         await Shell.Current.GoToAsync($"EditItemPage?itemId={ItemId}");
+    }
+
+    [RelayCommand]
+    private async Task DeleteItemAsync()
+    {
+        var confirm = await Shell.Current.DisplayAlert(
+            "Delete Item",
+            "Are you sure you want to delete this item?",
+            "Yes", "No");
+
+        if (!confirm) return;
+
+        try
+        {
+            IsBusy = true;
+            await _itemService.DeleteItemAsync(ItemId);
+            await Shell.Current.DisplayAlert("Success", "Item deleted successfully!", "OK");
+            await Shell.Current.GoToAsync("..");
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlert("Error", ex.Message, "OK");
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 }
