@@ -2,8 +2,8 @@ using Microsoft.Extensions.Logging;
 using StarterApp.ViewModels;
 using StarterApp.Database.Data;
 using StarterApp.Views;
-using System.Diagnostics;
 using StarterApp.Services;
+using StarterApp.Repositories;
 
 namespace StarterApp;
 
@@ -20,15 +20,39 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
-        builder.Services.AddDbContext<AppDbContext>();
+        // Database
+        builder.Services.AddDbContextFactory<AppDbContext>();
 
+        // Core Services
         builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
         builder.Services.AddSingleton<INavigationService, NavigationService>();
 
+        // Item Feature
+        builder.Services.AddTransient<IItemRepository, ItemRepository>();
+        builder.Services.AddTransient<IItemService, ItemService>();
+        builder.Services.AddTransient<ItemListViewModel>();
+        builder.Services.AddTransient<ItemListPage>();
+        builder.Services.AddTransient<CreateItemViewModel>();
+        builder.Services.AddTransient<CreateItemPage>();
+        builder.Services.AddTransient<ItemDetailViewModel>();
+        builder.Services.AddTransient<ItemDetailPage>();
+        builder.Services.AddTransient<EditItemViewModel>();
+        builder.Services.AddTransient<EditItemPage>();
+
+        // Rental Feature
+        builder.Services.AddTransient<IRentalRepository, RentalRepository>();
+        builder.Services.AddTransient<IRentalService, RentalService>();
+        builder.Services.AddTransient<RentalListViewModel>();
+        builder.Services.AddTransient<RentalListPage>();
+        builder.Services.AddTransient<RequestRentalViewModel>();
+        builder.Services.AddTransient<RequestRentalPage>();
+
+        // Shell & App
         builder.Services.AddSingleton<AppShellViewModel>();
         builder.Services.AddSingleton<AppShell>();
         builder.Services.AddSingleton<App>();
 
+        // Other Pages
         builder.Services.AddTransient<MainViewModel>();
         builder.Services.AddTransient<MainPage>();
         builder.Services.AddSingleton<LoginViewModel>();
@@ -45,7 +69,6 @@ public static class MauiProgram
 #if DEBUG
         builder.Logging.AddDebug();
 #endif
-
         return builder.Build();
     }
 }
