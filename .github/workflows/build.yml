@@ -31,7 +31,10 @@ jobs:
             dotnet-version: 10.0
 
         - name: Restore dependencies
-          run: dotnet restore ./StarterApp.sln
+          run: dotnet restore ./StarterApp.Database/StarterApp.Database.csproj
+
+        - name: Restore test dependencies
+          run: dotnet restore ./StarterApp.Test/StarterApp.Test.csproj
 
         - name: Build project
           run: dotnet build ./StarterApp.Database/StarterApp.Database.csproj --framework net10.0
