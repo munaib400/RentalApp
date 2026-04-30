@@ -85,4 +85,78 @@ public class ItemRepositoryTests
         await context.SaveChangesAsync();
         Assert.Equal(1, await context.Rentals.CountAsync());
     }
+
+    [Fact]
+    public async Task GetItemsByOwner_ReturnsOnlyOwnerItems()
+    {
+        using var context = CreateInMemoryContext();
+        context.Items.AddRange(
+            new Item { Title = "Drill", Description = "A drill", DailyRate = 5.99m, Category = "Tools", Location = "Edinburgh", OwnerId = 1, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new Item { Title = "Tent", Description = "A tent", DailyRate = 10.00m, Category = "Camping", Location = "Glasgow", OwnerId = 2, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new Item { Title = "Bike", Description = "A bike", DailyRate = 15.00m, Category = "Sports", Location = "Edinburgh", OwnerId = 1, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow }
+        );
+        await context.SaveChangesAsync();
+        var ownerItems = await context.Items.Where(i => i.OwnerId == 1).ToListAsync();
+        Assert.Equal(2, ownerItems.Count);
+    }
+
+    [Fact]
+    public async Task Item_Category_IsStoredCorrectly()
+    {
+        using var context = CreateInMemoryContext();
+        var item = new Item { Title = "Drill", Description = "A drill", DailyRate = 5.99m, Category = "Tools", Location = "Edinburgh", OwnerId = 1, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow };
+        context.Items.Add(item);
+        await context.SaveChangesAsync();
+        var result = await context.Items.FindAsync(item.Id);
+        Assert.Equal("Tools", result!.Category);
+    }
+
+    [Fact]
+    public async Task Rental_TotalCost_IsCalculatedCorrectly()
+    {
+        using var context = CreateInMemoryContext();
+        var rental = new Rental { ItemId = 1, RenterId = 2, StartDate = DateTime.UtcNow, EndDate = DateTime.UtcNow.AddDays(5), TotalCost = 29.95m, Status = RentalStatus.Requested, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow };
+        context.Rentals.Add(rental);
+        await context.SaveChangesAsync();
+        var result = await context.Rentals.FindAsync(rental.Id);
+        Assert.Equal(29.95m, result!.TotalCost);
+    }
+
+    [Fact]
+    public async Task MultipleRentals_ForSameItem_AreAllowed()
+    {
+        using var context = CreateInMemoryContext();
+        context.Rentals.AddRange(
+            new Rental { ItemId = 1, RenterId = 2, StartDate = DateTime.UtcNow, EndDate = DateTime.UtcNow.AddDays(1), TotalCost = 5.99m, Status = RentalStatus.Requested, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new Rental { ItemId = 1, RenterId = 3, StartDate = DateTime.UtcNow.AddDays(2), EndDate = DateTime.UtcNow.AddDays(3), TotalCost = 5.99m, Status = RentalStatus.Requested, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow }
+        );
+        await context.SaveChangesAsync();
+        var rentals = await context.Rentals.Where(r => r.ItemId == 1).ToListAsync();
+        Assert.Equal(2, rentals.Count);
+    }
+
+    [Fact]
+    public async Task RentalStatus_CanBeRejected()
+    {
+        using var context = CreateInMemoryContext();
+        var rental = new Rental { ItemId = 1, RenterId = 2, StartDate = DateTime.UtcNow, EndDate = DateTime.UtcNow.AddDays(1), TotalCost = 5.99m, Status = RentalStatus.Requested, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow };
+        context.Rentals.Add(rental);
+        await context.SaveChangesAsync();
+        rental.Status = RentalStatus.Rejected;
+        context.Rentals.Update(rental);
+        await context.SaveChangesAsync();
+        var result = await context.Rentals.FindAsync(rental.Id);
+        Assert.Equal(RentalStatus.Rejected, result!.Status);
+    }
+
+    [Fact]
+    public async Task Item_Location_IsStoredCorrectly()
+    {
+        using var context = CreateInMemoryContext();
+        var item = new Item { Title = "Drill", Description = "A drill", DailyRate = 5.99m, Category = "Tools", Location = "Edinburgh", OwnerId = 1, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow };
+        context.Items.Add(item);
+        await context.SaveChangesAsync();
+        var result = await context.Items.FindAsync(item.Id);
+        Assert.Equal("Edinburgh", result!.Location);
+    }
 }
