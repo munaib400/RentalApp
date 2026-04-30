@@ -66,4 +66,29 @@ public class ItemRepository : IItemRepository
             await context.SaveChangesAsync();
         }
     }
+
+    public async Task<List<Item>> GetAllAsync()
+    {
+        return await GetAllItemsAsync();
+    }
+
+    public async Task<Item?> GetByIdAsync(int id)
+    {
+        return await GetItemByIdAsync(id);
+    }
+
+    public async Task<Item> CreateAsync(Item entity)
+    {
+        return await CreateItemAsync(entity);
+    }
+
+    public async Task<Item> UpdateAsync(Item entity)
+    {
+        return await UpdateItemAsync(entity);
+    }
+
+    public async Task DeleteAsync(int id)
+    {
+        await DeleteItemAsync(id);
+    }
 }
